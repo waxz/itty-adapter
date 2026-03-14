@@ -134,6 +134,37 @@ bash examples/run.sh  # Full server+client tests
 
 ---
 
+## Known Issues
+
+### console.log(req) freezes in Node.js
+
+When using `@hono/node-server`, logging the raw Request object with `console.log(req)` will freeze the server.
+
+**Root cause:** `@hono/node-server` wraps the Web Request with custom property getters (using `Object.defineProperty`). When Node.js's console.log inspects the object, it accesses these getters which can cause an infinite loop or deadlock.
+
+**Evidence:**
+- `console.log(req)` - freezes ❌
+- `console.log("req", req)` - freezes ❌  
+- `JSON.stringify(req)` - works but returns `{}` ✅
+- `console.log(req.url, req.method)` - works ✅
+
+**Solution:** Always extract primitive values before logging:
+
+```typescript
+// ❌ Bad - freezes in Node.js
+app.get("/", (req, ctx) => {
+  console.log("request:", req)  // Freezes!
+})
+
+// ✅ Good - works in all runtimes
+app.get("/", (req, ctx) => {
+  console.log("url:", req.url)
+  console.log("method:", req.method)
+})
+```
+
+---
+
 ## Credits
 
 - [itty-router](https://github.com/kwhitley/itty-router)

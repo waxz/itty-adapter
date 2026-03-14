@@ -1,16 +1,17 @@
 {
   "name": "itty-adapter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "itty adapter for node, deno, bun, cf",
-  
-  
   "type": "module",
   "main": "./dist/index.js",
-  "include": [ "src/**/*" ], 
-  "directories": { "example": "examples" },
-
+  "include": [
+    "src/**/*"
+  ],
+  "directories": {
+    "example": "examples"
+  },
   "types": "./dist/index.d.ts",
-    "exports": {
+  "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
