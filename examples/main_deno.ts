@@ -1,3 +1,4 @@
 import { app } from "./src/app.ts"
 
-Deno.serve({ port: 8000 }, app.fetch)
+const port = parseInt(Deno.env.get('PORT') || '8000')
+Deno.serve({ port }, app.fetch)

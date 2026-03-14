@@ -11,7 +11,7 @@ export const HtmlEscapedCallbackPhase = {
 type HtmlEscapedCallbackOpts = {
   buffer?: [string]
   phase: (typeof HtmlEscapedCallbackPhase)[keyof typeof HtmlEscapedCallbackPhase]
-  context: Readonly<object> // An object unique to each JSX tree. This object is used as the WeakMap key.
+  context: Readonly<object>
 }
 export type HtmlEscapedCallback = (opts: HtmlEscapedCallbackOpts) => Promise<string> | undefined
 export type HtmlEscaped = {
@@ -20,33 +20,18 @@ export type HtmlEscaped = {
 }
 export type HtmlEscapedString = string & HtmlEscaped
 
-/**
- * StringBuffer contains string and Promise<string> alternately
- * The length of the array will be odd, the odd numbered element will be a string,
- * and the even numbered element will be a Promise<string>.
- * When concatenating into a single string, it must be processed from the tail.
- * @example
- * [
- *   'framework.',
- *   Promise.resolve('ultra fast'),
- *   'a ',
- *   Promise.resolve('is '),
- *   'Hono',
- * ]
- */
 export type StringBuffer = (string | Promise<string>)[]
 export type StringBufferWithCallbacks = StringBuffer & { callbacks: HtmlEscapedCallback[] }
 
 export const raw = (value: unknown, callbacks?: HtmlEscapedCallback[]): HtmlEscapedString => {
   const escapedString = new String(value) as HtmlEscapedString
   escapedString.isEscaped = true
-  escapedString.callbacks = callbacks
+  if (callbacks) {
+    escapedString.callbacks = callbacks
+  }
 
   return escapedString
 }
-
-// The `escapeToBuffer` implementation is based on code from the MIT licensed `react-dom` package.
-// https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/server/escapeTextForBrowser.js
 
 const escapeRe = /[&<>'"]/
 
@@ -78,9 +63,10 @@ export const stringBufferToString = async (
     if ((r as HtmlEscapedString).isEscaped ?? isEscaped) {
       str += r
     } else {
+      const resolvedR = r ?? ''
       const buf = [str]
-      escapeToBuffer(r, buf)
-      str = buf[0]
+      escapeToBuffer(resolvedR, buf)
+      str = buf[0] ?? str
     }
   }
 
@@ -148,7 +134,7 @@ export const resolveCallback = async (
 ): Promise<string> => {
   if (typeof str === 'object' && !(str instanceof String)) {
     if (!((str as unknown) instanceof Promise)) {
-      str = (str as unknown as string).toString() // HtmlEscapedString object to string
+      str = (str as unknown as string).toString()
     }
     if ((str as string | Promise<string>) instanceof Promise) {
       str = await (str as unknown as Promise<string>)
@@ -168,7 +154,6 @@ export const resolveCallback = async (
   const resStr = Promise.all(callbacks.map((c) => c({ phase, buffer, context }))).then((res) =>
     Promise.all(
       res
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter<string>(Boolean as any)
         .map((str) => resolveCallback(str, phase, false, context, buffer))
     ).then(() => (buffer as [string])[0])

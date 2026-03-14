@@ -1,0 +1,53 @@
+{
+  "name": "itty-adapter",
+  "version": "1.0.1",
+  "description": "itty adapter for node, deno, bun, cf",
+  
+  
+  "type": "module",
+  "main": "./dist/index.js",
+  "include": [ "src/**/*" ], 
+  "directories": { "example": "examples" },
+
+  "types": "./dist/index.d.ts",
+    "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./context.ts": {
+      "types": "./dist/context.d.ts",
+      "import": "./dist/context.js"
+    },
+    "./adapter.ts": {
+      "types": "./dist/helper/adapter/index.d.ts",
+      "import": "./dist/helper/adapter/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "pack": "rm -r ./dist && npm run build && npm pack",
+    "test": "cd examples && deno test tests/integration.test.ts --allow-env --allow-run --allow-write --allow-net"
+  },
+  "keywords": [
+    "itty"
+  ],
+  "author": "waxz",
+  "license": "MIT",
+  "homepage": "https://github.com/waxz/itty-adapter#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/waxz/itty-adapter.git"
+  },
+  "dependencies": {
+    "itty-router": "^5.0.23"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
+  }
+}

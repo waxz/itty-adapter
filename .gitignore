@@ -16,3 +16,4 @@ resources/.arch-internal-preview.css
 .wrangler
 node_modules
 .dev.vars
+dist

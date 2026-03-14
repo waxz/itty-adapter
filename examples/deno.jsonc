@@ -13,7 +13,12 @@
     "openapi-format": "https://esm.sh/openapi-format?bundle",
     "itty-router/": "npm:/itty-router/",
     "eventsource-parser/": "npm:/eventsource-parser/",
-    "@hono/node-server": "npm:/@hono/node-server"
+    "@hono/node-server": "npm:/@hono/node-server",
+    "itty-adapter": "../src/index.ts",
+    "itty-adapter/": "../src/",
+    "itty-adapter/context.ts": "../src/context.ts",
+    "itty-adapter/log.ts": "../src/adapter/log.ts",
+    "itty-adapter/adapter.ts": "../src/helper/adapter/index.ts"
   },
   "lint": {
     "rules": {

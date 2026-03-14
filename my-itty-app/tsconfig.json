@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+     "rootDir": "./src",
+    "outDir": "./dist",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true, // This is the key 5.7+ setting
+    "noEmit": false,                         // Must be false to generate files
+    "declaration": true
+  },
+  "include": ["src/**/*"]
+}

@@ -1,0 +1,8 @@
+name = "my-itty-app"
+compatibility_date = "2025-10-04"
+main = "dist/_worker.js"
+
+[vars]
+NAME = "Worker"
+
+# Or use .dev.vars for local development

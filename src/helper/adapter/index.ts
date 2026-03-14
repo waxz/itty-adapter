@@ -3,7 +3,7 @@
  * Adapter Helper for Hono.
  */
 
-import type { Context } from "./context.ts"
+import type { Context } from '../../context.ts'
 
 export type Runtime = 'node' | 'deno' | 'bun' | 'workerd' | 'fastly' | 'edge-light' | 'other'
 
@@ -31,15 +31,13 @@ export const env = <
       // @ts-ignore
       return Deno.env.toObject() as T
     },
-    // @ts-ignore -- change to work with itty-router
-    workerd: () => c,
+    workerd: () => c as unknown as T,
     // On Fastly Compute, you can use the ConfigStore to manage user-defined data.
     fastly: () => ({}) as T,
     other: () => ({}) as T,
   }
-  console.log("Runtime detected in env():", runtime);
 
-  return runtimeEnvHandlers[runtime]()
+  return runtimeEnvHandlers[runtime]!()
 }
 
 export const knownUserAgents: Partial<Record<Runtime, string>> = {

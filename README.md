@@ -1,86 +1,141 @@
 # itty-adapter
-Make itty-router work with Hono Adapter.
-Get ENV in Bun, Deno, Node, Cloudflare Workers
+Make itty-router work with Hono-style adapter pattern.
+Get ENV in Bun, Deno, Node.js, Cloudflare Workers/Pages.
 
+## IMPORTANT PATCH
 
+This library ports Hono's adapter utilities to work with itty-router. A critical patch was made to correctly return environment bindings for Cloudflare Workers:
 
-```ts
-import type { IRequest } from "itty-router/"
-import { Router } from "itty-router/Router"
-import { env, getRuntimeKey } from "../../src/adapter.ts"
-import { Context } from "../../src/context.ts"
+```typescript
+// Original Hono (incorrect for itty-adapter):
+workerd: () => c.env,
 
-const app = Router<IRequest>()
-
-app.get("/", (req:Request,ctx:Context) => {
-
- const {NAME}  = env<{NAME: string }>(ctx);
- console.log(`get ENV NAME: ${NAME}`)
-
-  return new Response(`hello ${NAME}` ,{
-    status : 200
-  })
-
-
-})
-export { app }
+// Patched for itty-adapter:
+workerd: () => c as unknown as T,
 
 ```
 
-## Run On Local
 
-### deno
+See `src/helper/adapter/index.ts` for the complete implementation.
 
+---
 
-#### install deno
-```shell
-curl -fsSL https://deno.land/install.sh | sh
-source ~/.bashrc
-```
+## Quick Start
 
-#### run [examples](examples)
-
-#### build 
-
-```shell
-deno task build
-```
-
-#### run 
-
-```shell
-export NAME=tom
+### Run with Deno
+```bash
+cd examples
+export NAME=world
 deno task start
+# Visit http://localhost:8000 -> "hello world"
 ```
 
-### node
-
-```shell
-node dist/main_node.mjs
+### Run with Node.js
+```bash
+deno task build
+NAME=world node dist/main_node.mjs
+# Visit http://localhost:8000 -> "hello world"
 ```
 
-### bun
-
-```shell
-npx bun dist/main_bun.mjs
+### Run with Bun
+```bash
+deno task build
+NAME=world bun dist/main_bun.mjs
+# Visit http://localhost:8000 -> "hello world"
 ```
 
-### deploy to cloudflare workers/pages
-
-```shell
+### Deploy to Cloudflare Workers
+```bash
 deno task build
 mkdir -p cf
 cp ./dist/main_cloudflare-workers.mjs ./cf/_worker.js
-npx wrangler dev ./cf/_worker.js --name itty-test --compatibility-date 2025-10-04 --port 8000
 
+# Development
+npx wrangler dev ./cf/_worker.js --name itty-test --compatibility-date 2025-10-04
 
+# Deploy
 npx wrangler deploy ./cf/_worker.js --name itty-test --compatibility-date 2025-10-04
 
+# Pages
 npx wrangler pages deploy ./cf --project-name itty-test
-
 ```
 
+---
 
-## Reference:
-https://github.com/zuisong/gemini-openai-proxy
-https://github.com/honojs/hono
+## Release
+```
+npm run pack
+
+npm install itty-adapter-1.0.1.tgz
+```
+
+## Demo: Create Your Own Server
+
+[my-itty-app](./my-itty-app)
+
+
+---
+
+## API
+
+### `env<T>(context, runtime?)`
+Returns environment variables. Runtime is auto-detected if not provided:
+- `bun` / `node` / `edge-light`: uses `process.env`
+- `deno`: uses `Deno.env.toObject()`
+- `workerd` (Cloudflare): uses context.env directly as bindings
+- `fastly`: returns empty object
+
+### `getRuntimeKey()`
+Returns: `'node' | 'deno' | 'bun' | 'workerd' | 'fastly' | 'edge-light' | 'other'`
+
+### Context class
+Hono-compatible context with methods:
+- `req`, `env`, `res`, `error`, `var`
+- `text()`, `json()`, `html()`, `body()`
+- `header()`, `status()`, `redirect()`, `notFound()`
+
+---
+
+## Testing
+
+```bash
+npm test              # Run integration tests (Deno test runner)
+npm run build         # TypeScript compilation
+bash examples/run.sh  # Full server+client tests
+```
+
+---
+
+## Project Structure
+
+```
+/workspaces/itty-adapter/
+├── src/
+│   ├── index.ts              # Main exports
+│   ├── context.ts           # Hono Context class (ported)
+│   ├── helper/adapter/
+│   │   └── index.ts         # env() and getRuntimeKey()
+│   ├── adapter/
+│   │   ├── types.ts         # Type definitions
+│   │   └── log.ts          # Logger utilities
+│   └── utils/               # HTML, MIME, headers, etc.
+├── examples/
+│   ├── src/app.ts           # Example itty-router app
+│   ├── main_*.ts           # Entry points for each runtime
+│   ├── tests/
+│   │   ├── integration.test.ts  # Integration tests
+│   │   └── run.sh           # Bash test runner
+│   └── deno.jsonc           # Deno config
+├── dist/                    # Compiled output
+├── package.json
+├── README.md
+└── AGENTS.md              # Development guidance
+```
+
+---
+
+## Credits
+
+- [itty-router](https://github.com/kwhitley/itty-router)
+- [Hono](https://github.com/honojs/hono)
+- [gemini-openai-proxy](https://github.com/zuisong/gemini-openai-proxy)
