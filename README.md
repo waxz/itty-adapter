@@ -36,8 +36,9 @@ npm run build
 
 npm pack
 
-npm install git+https://github.com/waxz/itty-adapter.git#main
-
+npm i git+https://github.com/waxz/itty-adapter.git#main
+# or
+npm i github:waxz/itty-adapter#main
 npx create-itty
 
 ```

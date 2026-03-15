@@ -14,7 +14,7 @@
   "type": "module",
   "dependencies": {
     "@hono/node-server": "^1.19.11",
-    "itty-adapter": "file:../itty-adapter-1.0.3.tgz",
+    "itty-adapter": "github:waxz/itty-adapter#main",
     "itty-router": "^5.0.23"
   },
   "devDependencies": {
