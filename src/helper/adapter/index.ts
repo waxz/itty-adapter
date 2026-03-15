@@ -37,7 +37,7 @@ export const env = <
     other: () => ({}) as T,
   }
 
-  return runtimeEnvHandlers[runtime]!()
+  return runtimeEnvHandlers[runtime]()
 }
 
 export const knownUserAgents: Partial<Record<Runtime, string>> = {

@@ -4,16 +4,6 @@ set -euo pipefail
 
 # ── Config ──────────────────────────────────────────────────────────────────────
 
-# Map: upstream URL → local file path (relative to project root)
-declare -A FILE_MAP=(
-    ["https://raw.githubusercontent.com/honojs/hono/main/src/helper/adapter/index.ts"]="src/helper/adapter/index.ts"
-    ["https://raw.githubusercontent.com/honojs/hono/main/src/context.ts"]="src/context.ts"
-    ["https://raw.githubusercontent.com/honojs/hono/main/src/utils/mime.ts"]="src/utils/mime.ts"
-    ["https://raw.githubusercontent.com/honojs/hono/main/src/utils/html.ts"]="src/utils/html.ts"
-    ["https://raw.githubusercontent.com/honojs/hono/main/src/utils/headers.ts"]="src/utils/headers.ts"
-    ["https://raw.githubusercontent.com/honojs/hono/main/src/utils/http-status.ts"]="src/utils/http-status.ts"
-    ["https://raw.githubusercontent.com/honojs/hono/main/src/utils/types.ts"]="src/utils/types.ts"
-)
 
 # ── Colors ──────────────────────────────────────────────────────────────────────
 
@@ -30,6 +20,47 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${PROJECT_ROOT:-$SCRIPT_DIR}"
 DOWNLOAD_DIR=$(mktemp -d "/tmp/hono-upstream-XXXXXX")
 DIFF_DIR=$(mktemp -d "/tmp/hono-diffs-XXXXXX")
+
+echo PROJECT_ROOT:$PROJECT_ROOT
+echo SCRIPT_DIR:$SCRIPT_DIR
+# Map: upstream URL → local file path (relative to project root)
+
+
+# 1. Initialize an associative array
+declare -A FILE_MAP
+
+# 2. Base URL for the mapping
+BASE_URL="https://raw.githubusercontent.com/honojs/hono/main"
+
+# 3. Walk the folder recursively
+# globstar (**) allows searching any depth
+shopt -s globstar
+
+# We loop through files relative to PROJECT_ROOT
+for file in "$PROJECT_ROOT"/src/**/*.ts; do
+    if [[ -f "$file" ]]; then
+            # Create a relative path (e.g., src/subdir/file.ts) for the URL
+        relative_path="${file#$PROJECT_ROOT/}"
+        
+        # Mapping: [URL] = Absolute Local Path
+        FILE_MAP["$BASE_URL/$relative_path"]="$file"
+
+        # Store: [URL]=PATH
+        # FILE_MAP["$BASE_URL/$file"]="$file"
+    fi
+done
+
+# 4. For loop to iterate through the mapping
+echo "Iterating through the mapping:"
+for url in "${!FILE_MAP[@]}"; do
+    path="${FILE_MAP[$url]}"
+    
+    echo "URL:  $url"
+    echo "Path: $path"
+    echo "-------------------"
+done
+
+
 
 trap 'rm -rf "$DOWNLOAD_DIR"' EXIT
 
@@ -65,7 +96,7 @@ identical_files=()
 
 for url in "${!FILE_MAP[@]}"; do
     local_rel="${FILE_MAP[$url]}"
-    local_abs="${PROJECT_ROOT}/${local_rel}"
+    local_abs="${local_rel}"
     filename=$(basename "$local_rel")
     parent_dir=$(dirname "$local_rel" | tr '/' '_')
     safe_name="${parent_dir}__${filename}"
@@ -108,11 +139,15 @@ for url in "${!FILE_MAP[@]}"; do
         echo -e "  ${YELLOW}▲ Differences found${NC} (~${additions} chars changed)"
 
         # Save a unified diff for reference
+        # local -> upstream
         diff -u --label "local/${local_rel}" --label "upstream/${local_rel}" \
             "$local_abs" "$upstream_file" \
             > "${DIFF_DIR}/${safe_name}.patch" || true
 
+
+    
         changed_files+=("$url|$local_abs|$upstream_file|$local_rel")
+
     fi
 done
 
@@ -158,7 +193,7 @@ echo ""
 for entry in "${changed_files[@]}"; do
     IFS='|' read -r url local_abs upstream_file local_rel <<< "$entry"
     echo -e "  ${YELLOW}↔${NC}  ${local_rel}"
-    code --diff "$local_abs" "$upstream_file" --wait &
+    code --diff  "$upstream_file" "$local_abs" --wait &
 done
 
 echo ""

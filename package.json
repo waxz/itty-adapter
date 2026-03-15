@@ -1,6 +1,6 @@
 {
   "name": "itty-adapter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "itty adapter for node, deno, bun, cf",
   "type": "module",
   "main": "./dist/index.js",
@@ -30,8 +30,9 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
-    "pack": "rm -r ./dist && npm run build && npm pack",
+    "build": "rm -r ./dist && tsc",
+    "prepack" : "npm run build",
+    "pack": "npm pack",
     "test": "cd examples && deno test tests/integration.test.ts --allow-env --allow-run --allow-write --allow-net"
   },
   "keywords": [

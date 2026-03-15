@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
-     "rootDir": "./src",
+    "rootDir": "./src",
     "outDir": "./dist",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ESNext",
-    "allowImportingTsExtensions": true,
+    
+    /* 1. Allows using .ts in imports */
+    "allowImportingTsExtensions": true, 
+    
+    /* 2. Automatically changes .ts to .js in the emitted dist files */
     "rewriteRelativeImportExtensions": true, // This is the key 5.7+ setting
-    "noEmit": false,                         // Must be false to generate files
+    "noEmit": false, 
+    /* 3. Required for rewriteRelativeImportExtensions to work with emit */
+    "noEmit": false, 
     "declaration": true
   },
   "include": ["src/**/*"]

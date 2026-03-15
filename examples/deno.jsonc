@@ -9,6 +9,9 @@
     "test": "deno test --allow-net --allow-env --coverage --no-check"
   },
   "imports": {
+    "@envelop/instrumentation": "npm:@envelop/instrumentation@^1.0.0",
+    "@whatwg-node/server": "npm:@whatwg-node/server@^0.10.18",
+    "hono": "npm:hono@^4.12.8",
     "itty-router": "npm:itty-router@^5.0.22",
     "openapi-format": "https://esm.sh/openapi-format?bundle",
     "itty-router/": "npm:/itty-router/",

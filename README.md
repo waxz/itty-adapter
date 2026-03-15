@@ -18,9 +18,24 @@ workerd: () => c as unknown as T,
 
 See `src/helper/adapter/index.ts` for the complete implementation.
 
+
+## Sync with [Hono](https://github.com/honojs/hono)
+
+- run `diff.sh` to download source from hono github, generate diff file, review with vscode
+```bash
+PROJECT_ROOT=$(pwd) ./scripts/diff.s
+```
+
 ---
 
 ## Quick Start
+
+### Build and pack
+```
+npm run build
+
+npm pack
+```
 
 ### Run with Deno
 ```bash
@@ -44,7 +59,7 @@ NAME=world bun dist/main_bun.mjs
 # Visit http://localhost:8000 -> "hello world"
 ```
 
-### Deploy to Cloudflare Workers
+### Run and Deploy to Cloudflare Workers
 ```bash
 deno task build
 mkdir -p cf
@@ -137,8 +152,9 @@ bash examples/run.sh  # Full server+client tests
 ## Known Issues
 
 ### console.log(req) freezes in Node.js
+> Use `@whatwg-node/server` instead of `@hono/node-server`.
 
-When using `@hono/node-server`, logging the raw Request object with `console.log(req)` will freeze the server.
+> When using `@hono/node-server`, logging the raw Request object with `console.log(req)` will freeze the server.
 
 **Root cause:** `@hono/node-server` wraps the Web Request with custom property getters (using `Object.defineProperty`). When Node.js's console.log inspects the object, it accesses these getters which can cause an infinite loop or deadlock.
 
