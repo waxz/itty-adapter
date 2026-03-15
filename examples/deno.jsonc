@@ -4,9 +4,14 @@
     "frozen": false
   },
   "tasks": {
-    "start": "deno run --allow-net --allow-env --sloppy-imports main_deno.ts",
+    "start": "deno run --allow-net --allow-env --sloppy-imports --allow-read main_deno.ts",
     "build": "deno run -A build.ts",
-    "test": "deno test --allow-net --allow-env --coverage --no-check"
+    "test": "deno test --allow-net --allow-env --coverage --no-check",
+    "cf" :"npx wrangler pages dev --port 8000",
+    "cf2" :"npx wrangler dev --config ./wrangler_worker.toml --port 8000",
+    "deno" : "deno run --allow-net --allow-env --sloppy-imports --allow-read main_deno.ts",
+    "bun" : "npx bun dist/main_bun.mjs",
+    "node" : "node dist/main_node.mjs"
   },
   "imports": {
     "@envelop/instrumentation": "npm:@envelop/instrumentation@^1.0.0",
@@ -21,7 +26,9 @@
     "itty-adapter/": "../src/",
     "itty-adapter/context.ts": "../src/context.ts",
     "itty-adapter/log.ts": "../src/adapter/log.ts",
-    "itty-adapter/adapter.ts": "../src/helper/adapter/index.ts"
+    "itty-adapter/adapter.ts": "../src/helper/adapter/index.ts",
+    "itty-adapter/env.ts": "../src/env.ts"
+
   },
   "lint": {
     "rules": {

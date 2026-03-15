@@ -11,7 +11,6 @@
     
     /* 2. Automatically changes .ts to .js in the emitted dist files */
     "rewriteRelativeImportExtensions": true, // This is the key 5.7+ setting
-    "noEmit": false, 
     /* 3. Required for rewriteRelativeImportExtensions to work with emit */
     "noEmit": false, 
     "declaration": true
