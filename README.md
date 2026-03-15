@@ -35,6 +35,26 @@ PROJECT_ROOT=$(pwd) ./scripts/diff.s
 npm run build
 
 npm pack
+
+npm install git+https://github.com/waxz/itty-adapter.git#main
+
+npx create-itty
+
+```
+
+### Create CLI
+- Define `bin` in `package.json`
+- Include resource `my-itty-app`
+- Add `.npmignore` to ignore files.
+```
+  "bin": {
+    "create-itty": "./bin/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "my-itty-app"
+  ],
 ```
 
 ### Run with Deno

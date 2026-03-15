@@ -25,9 +25,13 @@
       "import": "./dist/helper/adapter/index.js"
     }
   },
+  "bin": {
+    "create-itty": "./bin/cli.js"
+  },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "my-itty-app"
   ],
   "scripts": {
     "build": "rm -r ./dist && tsc",
