@@ -4,9 +4,6 @@
   "description": "itty adapter for node, deno, bun, cf",
   "type": "module",
   "main": "./dist/index.js",
-  "include": [
-    "src/**/*"
-  ],
   "directories": {
     "example": "examples"
   },
@@ -34,8 +31,9 @@
     "my-itty-app"
   ],
   "scripts": {
-    "build": "rm -r ./dist && tsc",
-    "prepack" : "npm run build",
+    "build": "node -e \"fs.rmSync('./dist', { recursive: true, force: true })\" && tsc",
+    "prepare": "npm run build",
+    "prepack": "npm run build",
     "pack": "npm pack",
     "test": "cd examples && deno test tests/integration.test.ts --allow-env --allow-run --allow-write --allow-net"
   },

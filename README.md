@@ -58,6 +58,21 @@ npx create-itty
   ],
 ```
 
+### Install via github
+To ensure your project automatically builds and includes the dist folder when installed directly via a GitHub URL (npm i github:waxz/itty-adapter#main), you need to use the prepare script in your package.json.
+The Solution: Use the prepare Script
+When you install a package from a Git repository, npm looks for a prepare script. It runs this script after the package is fetched but before it is linked into the user's node_modules.
+
+```
+  "scripts": {
+    "build": "node -e \"fs.rmSync('./dist', { recursive: true, force: true })\" && tsc",
+    "prepare": "npm run build",
+    "prepack": "npm run build",
+    "pack": "npm pack",
+    "test": "cd examples && deno test tests/integration.test.ts --allow-env --allow-run --allow-write --allow-net"
+  },
+```
+
 ### Run with Deno
 ```bash
 cd examples
