@@ -15,8 +15,19 @@ npm i ../itty-adapter-1.0.1.tgz
 PORT=8000 NAME=World deno run -A src/main.ts 
 ```
 
-Deploy to Cloudflare Workers
+## Install dependency
+```
+curl -fsSL https://deno.land/install.sh | sh
+source ~/.bashrc
 
+deno add npm:@whatwg-node/server
+
+npx bun
+npx wrangler
+
+```
+
+## Run test
 ```bash
 # Bundle for Workers
 mkdir -p dist/
